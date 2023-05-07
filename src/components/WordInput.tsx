@@ -7,7 +7,7 @@ const BoxWrapper = styled.div`
   gap: 0.5rem;
   height: auto;
 `;
-const Box = styled.p<{ isFocused: boolean }>`
+const Box = styled.p<{ isFocused: boolean; isAnswer?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,11 +17,12 @@ const Box = styled.p<{ isFocused: boolean }>`
   border: none;
   border-radius: 10px;
   margin: 20px 0;
-  background-color: ${(props) => (props.isFocused ? "#ccc" : "#eee")};
+  background-color: ${(props) => (props.isFocused ? "#ccc" : props.isAnswer ? "yellowgreen" : "#eee")};
 `;
 
 function WordInput({ checkWord, isFocusNow }: any) {
   const [inputWord, setInputWord] = useState<string>("");
+  const [answer, setAnswer] = useState<boolean[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onKeyDown = async (e: any) => {
@@ -33,9 +34,14 @@ function WordInput({ checkWord, isFocusNow }: any) {
       }
     } else if (e.key === "Enter" && inputWord.length === 5) {
       const res = await checkWordServer(inputWord);
-      checkWord();
-      console.log(res);
-    } else {
+      if (res) {
+        setAnswer(res);
+        if (res.every((item) => item)) {
+          alert("Correct!");
+        }
+      }
+      checkWord(inputWord);
+    } else if (e.keyCode >= 65 && e.keyCode <= 90) {
       if (inputWord.length < 5) {
         setInputWord((prev) => prev + e.key);
       }
@@ -49,7 +55,7 @@ function WordInput({ checkWord, isFocusNow }: any) {
       }}
     >
       {[...Array(5)].map((item: any, idx: any) => (
-        <Box key={idx} onKeyDown={onKeyDown} tabIndex={0} isFocused={isFocusNow}>
+        <Box key={idx} onKeyDown={onKeyDown} tabIndex={0} isFocused={isFocusNow} isAnswer={answer[idx]}>
           {inputWord[idx]}
         </Box>
       ))}

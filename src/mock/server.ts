@@ -1,5 +1,5 @@
 export function checkWordServer(payload: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<boolean[]>((resolve, reject) => {
     const answer = "apple";
     const result: boolean[] = [];
     for (let i = 0; i < 5; i++) {

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import WordInput from "./WordInput";
 import styled from "styled-components";
+import { useRecoilState } from "recoil";
+import { keyState } from "../store/atom";
 
 const WordInputContainer = styled.div`
   display: flex;
@@ -10,9 +12,12 @@ const WordInputContainer = styled.div`
 
 function WordInputList() {
   const [focusedIdx, setFocusedIdx] = useState<number>(0);
-  const checkWord = () => {
+  const [key, setKey] = useRecoilState<any[]>(keyState);
+  const checkWord = (input: string) => {
     setFocusedIdx((prev) => prev + 1);
-    console.log(focusedIdx);
+    for (let i = 0; i < 5; i++) {
+      setKey((prev) => [...prev, input[i]]);
+    }
   };
 
   return (

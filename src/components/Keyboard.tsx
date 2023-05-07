@@ -1,7 +1,20 @@
 import React from "react";
+import { useRecoilValue } from "recoil";
+import { uniqueKeyState } from "../store/atom";
 
 function Keyboard() {
-  return <div>Keyboard</div>;
+  const { uniqueKey } = useRecoilValue(uniqueKeyState);
+
+  return (
+    <div>
+      Used Key
+      <ul>
+        {uniqueKey.map((item: any) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 export default Keyboard;
