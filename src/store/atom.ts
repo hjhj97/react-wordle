@@ -9,7 +9,7 @@ export const uniqueKeyState = selector({
   key: "uniqueKeyState",
   get: ({ get }) => {
     const key = get(keyState);
-    const uniqueKey = [...new Set<any>(key)];
+    const uniqueKey = [...new Set<string>(key)];
 
     return {
       uniqueKey,

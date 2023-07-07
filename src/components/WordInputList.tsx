@@ -12,7 +12,7 @@ const WordInputContainer = styled.div`
 
 function WordInputList() {
   const [focusedIdx, setFocusedIdx] = useState<number>(0);
-  const [key, setKey] = useRecoilState<any[]>(keyState);
+  const [key, setKey] = useRecoilState<string[]>(keyState);
   const checkWord = (input: string) => {
     setFocusedIdx((prev) => prev + 1);
     for (let i = 0; i < 5; i++) {
@@ -22,7 +22,7 @@ function WordInputList() {
 
   return (
     <WordInputContainer>
-      {[...Array(6)].map((item, idx) => (
+      {[...Array(6)].map((_, idx: number) => (
         <WordInput key={idx} isFocusNow={focusedIdx === idx} checkWord={checkWord} />
       ))}
     </WordInputContainer>

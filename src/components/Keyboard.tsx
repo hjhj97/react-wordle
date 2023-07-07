@@ -9,7 +9,7 @@ function Keyboard() {
     <div>
       Used Key
       <ul>
-        {uniqueKey.map((item: any) => (
+        {uniqueKey.map((item: string) => (
           <li key={item}>{item}</li>
         ))}
       </ul>

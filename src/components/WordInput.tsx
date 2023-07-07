@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, KeyboardEvent } from "react";
 import styled from "styled-components";
 import { checkWordServer } from "../mock/server";
 const BoxWrapper = styled.div`
@@ -25,7 +25,7 @@ function WordInput({ checkWord, isFocusNow }: any) {
   const [answer, setAnswer] = useState<boolean[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onKeyDown = async (e: any) => {
+  const onKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
     if (!isFocusNow) return;
 
     if (e.key === "Backspace") {
@@ -41,7 +41,7 @@ function WordInput({ checkWord, isFocusNow }: any) {
         }
       }
       checkWord(inputWord);
-    } else if (e.keyCode >= 65 && e.keyCode <= 90) {
+    } else if (e.key >= "a" && e.key <= "z") {
       if (inputWord.length < 5) {
         setInputWord((prev) => prev + e.key);
       }
@@ -54,7 +54,7 @@ function WordInput({ checkWord, isFocusNow }: any) {
         inputRef.current?.focus();
       }}
     >
-      {[...Array(5)].map((item: any, idx: any) => (
+      {[...Array(5)].map((_, idx: number) => (
         <Box key={idx} onKeyDown={onKeyDown} tabIndex={0} isFocused={isFocusNow} isAnswer={answer[idx]}>
           {inputWord[idx]}
         </Box>
