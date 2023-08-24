@@ -1,4 +1,4 @@
-import React, { useRef, useState, KeyboardEvent } from "react";
+import { useRef, useState, KeyboardEvent } from "react";
 import styled from "styled-components";
 import { checkWordServer } from "../mock/server";
 const BoxWrapper = styled.div`
