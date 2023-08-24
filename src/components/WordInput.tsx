@@ -1,6 +1,7 @@
 import { useRef, useState, KeyboardEvent } from "react";
 import styled from "styled-components";
 import { checkWordServer } from "../mock/server";
+
 const BoxWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -20,32 +21,46 @@ const Box = styled.p<{ isFocused: boolean; isAnswer?: boolean }>`
   background-color: ${(props) => (props.isFocused ? "#ccc" : props.isAnswer ? "yellowgreen" : "#eee")};
 `;
 
-function WordInput({ checkWord, isFocusNow }: any) {
+const WORD_LENGTH = 5;
+
+function WordInput({ checkWord, isFocusNow }: { checkWord: (input: string) => void; isFocusNow: boolean }) {
   const [inputWord, setInputWord] = useState<string>("");
   const [answer, setAnswer] = useState<boolean[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const deleteChar = () => {
+    setInputWord((prev) => prev.slice(0, prev.length - 1));
+  };
+
+  const checkAnswer = async () => {
+    const res = await checkWordServer(inputWord);
+    if (res) {
+      setAnswer(res);
+      if (res.every((item) => item)) {
+        alert("Correct!");
+      }
+    }
+    checkWord(inputWord);
+  };
 
   const onKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
     if (!isFocusNow) return;
 
     if (e.key === "Backspace") {
       if (inputWord.length > 0) {
-        setInputWord((prev) => prev.slice(0, prev.length - 1));
+        deleteChar();
+      } else return;
+    } else if (e.key === "Enter") {
+      if (inputWord.length === WORD_LENGTH) {
+        await checkAnswer();
+      } else {
+        alert(`${WORD_LENGTH}글자를 모두 입력해주세요.`);
       }
-    } else if (e.key === "Enter" && inputWord.length === 5) {
-      const res = await checkWordServer(inputWord);
-      if (res) {
-        setAnswer(res);
-        if (res.every((item) => item)) {
-          alert("Correct!");
-        }
-      }
-      checkWord(inputWord);
     } else if (e.key >= "a" && e.key <= "z") {
-      if (inputWord.length < 5) {
+      if (inputWord.length < WORD_LENGTH) {
         setInputWord((prev) => prev + e.key);
       }
-    }
+    } else return;
   };
 
   return (
@@ -54,7 +69,7 @@ function WordInput({ checkWord, isFocusNow }: any) {
         inputRef.current?.focus();
       }}
     >
-      {[...Array(5)].map((_, idx: number) => (
+      {[...Array(WORD_LENGTH)].map((_, idx) => (
         <Box key={idx} onKeyDown={onKeyDown} tabIndex={0} isFocused={isFocusNow} isAnswer={answer[idx]}>
           {inputWord[idx]}
         </Box>
