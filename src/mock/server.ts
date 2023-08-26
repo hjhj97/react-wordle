@@ -1,9 +1,19 @@
+import { WORD_LENGTH } from "../constants/word";
+
+export type AnswerStatus = "EXACT" | "INCLUDE" | "NONE";
+
 export function checkWordServer(payload: string) {
-  return new Promise<boolean[]>((resolve, reject) => {
+  return new Promise<AnswerStatus[]>((resolve) => {
     const answer = "apple";
-    const result: boolean[] = [];
-    for (let i = 0; i < 5; i++) {
-      result[i] = answer[i] === payload[i];
+    const result: AnswerStatus[] = [];
+    for (let i = 0; i < WORD_LENGTH; i++) {
+      if (answer[i] === payload[i]) {
+        result[i] = "EXACT";
+      } else if (answer.includes(payload[i])) {
+        result[i] = "INCLUDE";
+      } else {
+        result[i] = "NONE";
+      }
     }
 
     setTimeout(() => {

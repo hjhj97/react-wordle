@@ -1,6 +1,7 @@
 import { useRef, useState, KeyboardEvent } from "react";
 import styled from "styled-components";
-import { checkWordServer } from "../mock/server";
+import { AnswerStatus, checkWordServer } from "../mock/server";
+import { WORD_LENGTH } from "../constants/word";
 
 const BoxWrapper = styled.div`
   display: flex;
@@ -8,7 +9,7 @@ const BoxWrapper = styled.div`
   gap: 0.5rem;
   height: auto;
 `;
-const Box = styled.p<{ isFocused: boolean; isAnswer?: boolean }>`
+const Box = styled.p<{ isFocused: boolean; answerStatus?: AnswerStatus }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,14 +19,19 @@ const Box = styled.p<{ isFocused: boolean; isAnswer?: boolean }>`
   border: none;
   border-radius: 10px;
   margin: 20px 0;
-  background-color: ${(props) => (props.isFocused ? "#ccc" : props.isAnswer ? "yellowgreen" : "#eee")};
+  background-color: ${(props) =>
+    props.isFocused
+      ? "#ccc"
+      : props.answerStatus === "EXACT"
+      ? "yellowgreen"
+      : props.answerStatus === "INCLUDE"
+      ? "orange"
+      : "#eee"};
 `;
-
-const WORD_LENGTH = 5;
 
 function WordInput({ checkWord, isFocusNow }: { checkWord: (input: string) => void; isFocusNow: boolean }) {
   const [inputWord, setInputWord] = useState<string>("");
-  const [answer, setAnswer] = useState<boolean[]>([]);
+  const [answer, setAnswer] = useState<AnswerStatus[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const deleteChar = () => {
@@ -36,7 +42,7 @@ function WordInput({ checkWord, isFocusNow }: { checkWord: (input: string) => vo
     const res = await checkWordServer(inputWord);
     if (res) {
       setAnswer(res);
-      if (res.every((item) => item)) {
+      if (res.every((item) => item === "EXACT")) {
         alert("Correct!");
       }
     }
@@ -70,7 +76,7 @@ function WordInput({ checkWord, isFocusNow }: { checkWord: (input: string) => vo
       }}
     >
       {[...Array(WORD_LENGTH)].map((_, idx) => (
-        <Box key={idx} onKeyDown={onKeyDown} tabIndex={0} isFocused={isFocusNow} isAnswer={answer[idx]}>
+        <Box key={idx} onKeyDown={onKeyDown} tabIndex={0} isFocused={isFocusNow} answerStatus={answer[idx]}>
           {inputWord[idx]}
         </Box>
       ))}
